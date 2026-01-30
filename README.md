@@ -1,63 +1,58 @@
 # Mortgage Pre-Approval API
 
-A lightweight Python backend API that simulates mortgage pre-approval decisions based on debt-to-income ratio and credit score. Built as a learning project to demonstrate backend development fundamentals.
+A backend API that simulates mortgage pre-approval decisions using debt-to-income ratios and credit score checks. I built this to combine my 5+ years of mortgage industry experience with my Python backend skills.
 
-## 🎯 What This Project Does
+## 🎯 What It Does
 
-This API evaluates loan applications using simple financial rules:
-- Calculates **Debt-to-Income (DTI)** ratio
-- Checks if DTI ≤ 45%
-- Verifies credit score ≥ 600
-- Returns approval or denial with explanation
+This API evaluates loan applications using simple rules:
+- Calculates your debt-to-income (DTI) ratio
+- Checks if DTI is 45% or less
+- Checks if credit score is 600 or higher
+- Returns approved or declined with an explanation
 
 ## 🛠️ Tech Stack
 
-- **FastAPI** - Modern Python web framework
-- **Pydantic/SQLModel** - Data validation and ORM
-- **SQLite** - Lightweight database
-- **pytest** - Testing framework
-- **python-dotenv** - Environment configuration
+- **FastAPI** - Web framework
+- **SQLModel** - Database ORM
+- **SQLite** - Database
+- **Pydantic** - Data validation
+- **pytest** - Testing
 
 ## 📁 Project Structure
 
 ```
 mortgage-preapproval-api/
 ├── app/
-│   ├── main.py          # API routes and endpoints
+│   ├── main.py          # API routes
 │   ├── models.py        # Data models and business logic
-│   ├── database.py      # Database configuration
+│   ├── database.py      # Database setup
 │   └── auth.py          # API key authentication
 ├── tests/
-│   └── test_api.py      # Unit tests
-├── .env                 # Environment variables (create this)
-├── requirements.txt     # Python dependencies
-├── README.md           # This file
-└── ARCHITECTURE.md     # Technical design doc
+│   └── test_api.py      # Tests
+├── .env                 # Environment variables
+├── requirements.txt     # Dependencies
+└── README.md           
 ```
 
-## 🚀 Quick Start
+## 🚀 Setup
 
-### 1. Clone and Setup
+### 1. Clone and Install
 
 ```bash
-# Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/Ozzman424/mortgage-preapproval-api.git
 cd mortgage-preapproval-api
 
-# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Mac/Linux
 
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Configure Environment
-
-Create a `.env` file in the root directory:
+### 2. Create .env File
 
 ```env
-API_KEY=your_secret_api_key_12345
+API_KEY=test_api_key_12345
 DATABASE_URL=sqlite:///./mortgage_applications.db
 ```
 
@@ -67,20 +62,12 @@ DATABASE_URL=sqlite:///./mortgage_applications.db
 uvicorn app.main:app --reload
 ```
 
-The API will start at `http://127.0.0.1:8000`
-
-### 4. View API Documentation
-
-Open your browser to:
-- **Swagger UI**: http://127.0.0.1:8000/docs
-- **ReDoc**: http://127.0.0.1:8000/redoc
+Go to: http://127.0.0.1:8000/docs
 
 ## 📡 API Endpoints
 
-### Public Endpoints
-
-#### `GET /health`
-Health check to verify API is running.
+### GET /health
+Check if API is running (no auth needed)
 
 **Response:**
 ```json
@@ -90,40 +77,17 @@ Health check to verify API is running.
 }
 ```
 
-#### `GET /applications/{id}`
-Retrieve a saved loan application.
-
-**Response:**
-```json
-{
-  "id": 1,
-  "applicant_name": "John Doe",
-  "monthly_income": 5000.0,
-  "monthly_debts": 1500.0,
-  "credit_score": 720,
-  "loan_amount": 250000.0,
-  "dti_ratio": 30.0,
-  "decision": "approved",
-  "decision_message": "Applicant approved based on healthy DTI and credit score.",
-  "created_at": "2025-01-14T10:30:00"
-}
-```
-
-### Protected Endpoints (Require API Key)
-
-Send API key in header: `X-API-Key: your_secret_api_key_12345`
-
-#### `POST /simulate`
-Simulate approval **without** saving to database.
+### POST /simulate
+Test approval without saving (needs API key)
 
 **Request:**
 ```json
 {
   "applicant_name": "John Doe",
-  "monthly_income": 5000.00,
-  "monthly_debts": 1500.00,
+  "monthly_income": 5000,
+  "monthly_debts": 1500,
   "credit_score": 720,
-  "loan_amount": 250000.00
+  "loan_amount": 250000
 }
 ```
 
@@ -137,108 +101,81 @@ Simulate approval **without** saving to database.
 }
 ```
 
-#### `POST /applications`
-Submit application and save to database.
+### POST /applications
+Save application to database (needs API key)
 
-**Request:** Same as `/simulate`
+Same request format as `/simulate`, but saves to database and returns an ID.
+
+### GET /applications/{id}
+Get a saved application by ID
 
 **Response:**
 ```json
 {
   "id": 1,
+  "applicant_name": "John Doe",
+  "monthly_income": 5000.0,
+  "credit_score": 720,
   "decision": "approved",
-  "message": "Applicant approved based on healthy DTI and credit score.",
-  "dti_ratio": 30.0,
   "created_at": "2025-01-14T10:30:00"
 }
 ```
 
-## 🧪 Testing
+## ⚙️ How to Use the API
 
-Run all tests:
+### With cURL:
+
+```bash
+# Check health
+curl http://127.0.0.1:8000/health
+
+# Simulate approval
+curl -X POST http://127.0.0.1:8000/simulate \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: test_api_key_12345" \
+  -d '{"applicant_name":"John Doe","monthly_income":5000,"monthly_debts":1500,"credit_score":720,"loan_amount":250000}'
+```
+
+### With Browser:
+Just go to http://127.0.0.1:8000/docs and use the interactive interface!
+
+## 🧪 Running Tests
+
 ```bash
 pytest tests/ -v
 ```
 
-Run with coverage:
-```bash
-pytest tests/ --cov=app --cov-report=html
-```
+All 15 tests should pass.
 
-## 📝 Example Usage with cURL
+## 🧠 How the Approval Logic Works
 
-### Health Check
-```bash
-curl http://127.0.0.1:8000/health
-```
-
-### Simulate Approval
-```bash
-curl -X POST http://127.0.0.1:8000/simulate \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: your_secret_api_key_12345" \
-  -d '{
-    "applicant_name": "John Doe",
-    "monthly_income": 5000,
-    "monthly_debts": 1500,
-    "credit_score": 720,
-    "loan_amount": 250000
-  }'
-```
-
-### Submit Application
-```bash
-curl -X POST http://127.0.0.1:8000/applications \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: your_secret_api_key_12345" \
-  -d '{
-    "applicant_name": "Jane Smith",
-    "monthly_income": 6000,
-    "monthly_debts": 2000,
-    "credit_score": 680,
-    "loan_amount": 300000
-  }'
-```
-
-### Get Application
-```bash
-curl http://127.0.0.1:8000/applications/1
-```
-
-## 🧠 Business Logic
-
-### DTI Calculation
+### DTI Calculation:
 ```
 DTI = (Monthly Debts / Monthly Income) × 100
 ```
 
-**Example:** $1,500 debts ÷ $5,000 income = 30% DTI
+Example: $1,500 debts ÷ $5,000 income = 30% DTI
 
-### Approval Rules
+### Approval Rules:
 
-| Condition | Result |
-|-----------|--------|
-| Credit Score < 600 | ❌ Declined |
+| Rule | Result |
+|------|--------|
+| Credit score < 600 | ❌ Declined |
 | DTI > 45% | ❌ Declined |
-| Both conditions met | ✅ Approved |
+| Both pass | ✅ Approved |
 
 ## 📚 What I Learned
 
-- Building RESTful APIs with FastAPI
-- Data validation with Pydantic models
-- Database operations with SQLModel/SQLAlchemy
+- Building REST APIs with FastAPI
+- Using Pydantic for data validation
+- Database operations with SQLModel
+- Writing tests with pytest
 - API authentication patterns
-- Writing unit tests with pytest
-- Structuring a Python backend project
-- Environment configuration management
+- Organizing a backend project
 
-## 🔐 Security Notes
+## 💡 Future Improvements
 
-- API key authentication is basic; use OAuth2/JWT for production
-- SQLite is development-only; use PostgreSQL/MySQL for production
-- Add rate limiting for public APIs
-- Implement proper error logging
-
-## 📖 Additional Documentation
-
-See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed technical design.
+- Add PostgreSQL for production
+- Implement JWT authentication
+- Add more loan qualification rules (LTV, employment history)
+- Deploy to cloud (Railway or Render)
