@@ -2,6 +2,9 @@
 
 A backend API that simulates mortgage pre-approval decisions using debt-to-income ratios and credit score checks. I built this to combine my 5+ years of mortgage industry experience with my Python backend skills.
 
+## 🎥 Demo Video
+[(Click here)](https://www.youtube.com/watch?v=hdq7KYJo0WU)
+
 ## 🎯 What It Does
 
 This API evaluates loan applications using simple rules:
